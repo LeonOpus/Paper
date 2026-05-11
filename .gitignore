@@ -1,0 +1,27 @@
+# Large training outputs
+2018_Bert/output/
+Output/
+*/output/
+*/runs/
+*/wandb/
+*/logs/
+*/.cache/
+
+# LLaMA-Factory large assets (moved out of repo)
+2022_Lora/LLaMA-Factory/data/*
+2022_Lora/LLaMA-Factory/saves/*
+!2022_Lora/LLaMA-Factory/data
+!2022_Lora/LLaMA-Factory/saves
+
+# Python cache
+**/__pycache__/
+
+# Local logs
+2018_Bert/*.log
+
+# Local editor settings
+.vscode/
+
+# Local utilities
+gpu_fan_control.py
+gpu_fan_control.service

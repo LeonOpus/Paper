@@ -1,0 +1,12 @@
+train_file: ['data/coco.json', 'data/vg.json', 'data/cc3m.json']
+image_root: 'data/'
+
+vision_encoder: 'vit_base_patch16_224'
+text_encoder:   'bert-base-uncased'
+image_res: 256
+mlm_probability: 0.15
+
+batch_size: 512
+optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
+schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-6,
+            warmup_lr: 1e-6, warmup_epochs: 5, cooldown_epochs: 0}

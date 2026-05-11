@@ -1,0 +1,123 @@
+{
+  "settings": {
+    "src_lang": "en",
+    "trg_lang": "de",
+    "src_pad_idx": 0,
+    "trg_pad_idx": 0,
+    "src_vocab_size": 10,
+    "trg_vocab_size": 10,
+    "max_len": 50
+  },
+  "src_vocab": [
+    "<blank>",
+    "<unk>",
+    "I",
+    "you",
+    "he",
+    "she",
+    "we",
+    "they",
+    "love",
+    "hate"
+  ],
+  "trg_vocab": [
+    "<blank>",
+    "<unk>",
+    "ich",
+    "du",
+    "er",
+    "sie",
+    "wir",
+    "sie",
+    "liebe",
+    "hasse"
+  ],
+  "train": [
+    {
+      "src": [
+        2,
+        8,
+        3
+      ],
+      "trg": [
+        2,
+        8,
+        3
+      ]
+    },
+    {
+      "src": [
+        3,
+        9,
+        2
+      ],
+      "trg": [
+        3,
+        9,
+        2
+      ]
+    },
+    {
+      "src": [
+        4,
+        6,
+        8
+      ],
+      "trg": [
+        4,
+        6,
+        8
+      ]
+    },
+    {
+      "src": [
+        5,
+        8,
+        7
+      ],
+      "trg": [
+        5,
+        8,
+        7
+      ]
+    },
+    {
+      "src": [
+        6,
+        8,
+        4
+      ],
+      "trg": [
+        6,
+        8,
+        4
+      ]
+    }
+  ],
+  "valid": [
+    {
+      "src": [
+        7,
+        8,
+        3
+      ],
+      "trg": [
+        7,
+        8,
+        3
+      ]
+    },
+    {
+      "src": [
+        2,
+        9,
+        5
+      ],
+      "trg": [
+        2,
+        9,
+        5
+      ]
+    }
+  ]
+}

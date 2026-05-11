@@ -1,0 +1,7 @@
+output/
+runs/
+wandb/
+logs/
+.cache/
+**/__pycache__/
+*.log

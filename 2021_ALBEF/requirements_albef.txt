@@ -1,0 +1,7 @@
+ruamel_yaml
+timm==0.4.9
+transformers==4.30.2
+pycocotools
+opencv-python
+scipy
+matplotlib

@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/pip install *)",
+      "Bash(python3 -c ' *)",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/python smoke_test.py)",
+      "Bash(bash /home/leon/GitHub/Paper/2022_VLMO/setup_paths.sh)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{time_total}s\" \"https://storage.googleapis.com/sfr-vision-language-research/datasets/coco_train.json\")",
+      "Bash(curl -s -o /dev/null -w \"COCO annotations: %{http_code}\\\\n\" --max-time 8 \"http://images.cocodataset.org/annotations/annotations_trainval2014.zip\")",
+      "Bash(curl -s -o /dev/null -w \"HF mirror: %{http_code}\\\\n\" --max-time 8 \"https://hf-mirror.com\")",
+      "Bash(curl -s -o /dev/null -w \"ModelScope: %{http_code}\\\\n\" --max-time 8 \"https://modelscope.cn\")",
+      "Bash(wait)",
+      "Bash(aria2c --version)",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/python -c ' *)",
+      "Bash(HF_ENDPOINT=https://hf-mirror.com HF_DATASETS_CACHE=/home/leon/DataSet/HuggingFace /home/leon/miniconda3/envs/2022_VLMO/bin/python -c ' *)",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/aria2c --max-connection-per-server=8 --split=8 --dir=/home/leon/DataSet/HuggingFace/2022_VLMO/data --out=annotations_trainval2014.zip --auto-file-renaming=false http://images.cocodataset.org/annotations/annotations_trainval2014.zip)",
+      "Bash(jobs -l)",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/aria2c --max-connection-per-server=8 --split=8 --dir=/home/leon/DataSet/HuggingFace/2022_VLMO/data --out=annotations_trainval2014.zip http://images.cocodataset.org/annotations/annotations_trainval2014.zip)",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/python prepare_coco.py)",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/aria2c --max-connection-per-server=8 --split=8 --check-integrity=true --dir=/home/leon/DataSet/HuggingFace/2022_VLMO/data --out=annotations_trainval2014.zip http://images.cocodataset.org/annotations/annotations_trainval2014.zip)",
+      "Bash(python3 -m zipfile -t /home/leon/DataSet/HuggingFace/2022_VLMO/data/annotations_trainval2014.zip)",
+      "Bash(pkill -f \"aria2c.*annotations\")",
+      "Bash(rm -f /home/leon/DataSet/HuggingFace/2022_VLMO/data/annotations_trainval2014.zip*)",
+      "Bash(unzip -l /home/leon/DataSet/HuggingFace/2022_VLMO/data/annotations_trainval2014.zip)",
+      "Bash(pkill -f \"aria2c.*cocodataset\")",
+      "Bash(rm -f /home/leon/DataSet/HuggingFace/2022_VLMO/data/coco/images/train2014.zip*)",
+      "Bash(rm -f /home/leon/DataSet/HuggingFace/2022_VLMO/data/coco/images/train2014.zip* 2>/dev/null; ls /home/leon/DataSet/HuggingFace/2022_VLMO/data/coco/images/)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' --max-time 8 https://hf-mirror.com/datasets/lmms-lab/COCO-Caption)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' --max-time 10 https://hf-mirror.com/datasets/HuggingFaceM4/COCO)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' --max-time 10 https://modelscope.cn/datasets/AI-ModelScope/coco_2014/summary)",
+      "Bash(curl -s 'https://www.modelscope.cn/api/v1/datasets?PageSize=50&PageNumber=1&Query=coco&Source=local' -H 'Accept: application/json')",
+      "Bash(curl -s 'https://www.modelscope.cn/api/v1/datasets?PageSize=20&PageNumber=1&Query=coco' -H 'Accept: application/json')",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s 'https://www.modelscope.cn/api/v1/datasets?PageSize=50&PageNumber=1&Query=coco+2014' -H 'Accept: application/json')",
+      "Bash(curl -s 'https://www.modelscope.cn/api/v1/datasets?PageSize=50&PageNumber=1&Query=COCO_2014' -H 'Accept: application/json')",
+      "Bash(curl -s 'https://www.modelscope.cn/api/v1/datasets?PageSize=50&PageNumber=1&Query=COCO' -H 'Accept: application/json')",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/modelscope download *)",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/python Retrieval.py --config configs/Retrieval_coco.yaml --output_dir /home/leon/Output/2022_VLMO/retrieval_coco)",
+      "Bash(HF_ENDPOINT=https://hf-mirror.com HF_HOME=/home/leon/Model/HuggingFace /home/leon/miniconda3/envs/2022_VLMO/bin/python -c ' *)",
+      "Bash(HF_HOME=/home/leon/Model/HuggingFace TRANSFORMERS_OFFLINE=1 /home/leon/miniconda3/envs/2022_VLMO/bin/python -c ' *)",
+      "Bash(HF_HOME=/home/leon/Model/HuggingFace TRANSFORMERS_OFFLINE=1 /home/leon/miniconda3/envs/2022_VLMO/bin/python Retrieval.py --config configs/Retrieval_coco.yaml --output_dir /home/leon/Output/2022_VLMO/retrieval_coco)",
+      "Bash(nvidia-smi --query-gpu=name,memory.total,memory.free --format=csv)",
+      "Bash(journalctl -b -1 --no-pager -p err)",
+      "Bash(dmesg --ctime)"
+    ],
+    "additionalDirectories": [
+      "/home/leon/DataSet/HuggingFace/2022_VLMO/data/coco/images"
+    ]
+  }
+}
