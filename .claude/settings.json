@@ -127,7 +127,16 @@
       "Bash(kill 35173)",
       "Bash(nohup wget -q --show-progress -O /home/leon/vllm-ascend0.13.0rc3-ma-user-a2-v2.zip 'https://huangsy.obs.cn-southwest-2.myhuaweicloud.com:443/vllm-ascend0.13.0rc3-ma-user-a2-v2.zip?AccessKeyId=HST3U5O25ZHSRYDP57LM&Expires=1778531687&x-obs-security-token=gg5jbi1zb3V0aHdlc3QtMlBoeyJhY2Nlc3MiOiJIU1QzVTVPMjVaSFNSWURQNTdMTSIsImlzc3VlZCI6MTc3ODQ5NTI1MjgzOSwibWV0aG9kcyI6WyJ0b2tlbiJdLCJyb2xlIjpbXSwicm9sZXRhZ2VzIjpbXSwidGltZW91dF9hdCI6MTc3ODU4MTY1MjgzOSwidXNlciI6eyJkb21haW4iOnsiaWQiOiIwN2QxMmE0ZGY0Yjg0MDE0YWM4OTgzMDBiNjMzNzk3NyIsIm5hbWUiOiJoaWRfNmFxazBhNW10em9sbmRwIn0sImlkIjoiY2FjZGY0MTQ5OTMzNGQzM2E4ZjAwZTY1YzQ1YzI2YjAiLCJuYW1lIjoid3p5IiwicGFzc3dvcmRfZXhwaXJlc19hdCI6IiIsInVzZXJfdHlwZSI6MTZ9fS3-ddo9adN9EberJGtMlYUhANwS5wSSMIdKWBBJ9ceegZW3WE3euZYsI1cBPKVZD6MwWl2psulmlMdoLyTj0a4KOOaMiL3S4JHxCRDRbvtNP2umjDSmeadTpaRHycKTFXrb-l3yYWy8v6aeqgAWm24m89QU-6nTmgmWkzGnyZ0NMDDO5G-4p2opkwnHsbVfc_ZcQYiruYcPCtk2Wd3NX3gJL82Cd0oyhRkVMQyo2ifyL_3u9-PGaPh5Btfunxty8SdtcXzD23t0-pShWuFkqDmaporX6wKUnXMUNkdd-zZ5tgzNlOrVFzC1dwR-ws_0DD1cUvL40vpI-qUZ5GB7hHU%3D&Signature=tbOkVoUzsdmQ79NYQrDkOh0Ltpo%3D')",
       "Bash(wget -S --spider \"https://huangsy.obs.cn-southwest-2.myhuaweicloud.com:443/vllm-ascend0.13.0rc3-ma-user-a2-v2.zip?AccessKeyId=HST3U5O25ZHSRYDP57LM&Expires=1778531687&x-obs-security-token=gg5jbi1zb3V0aHdlc3QtMlBoeyJhY2Nlc3MiOiJIU1QzVTVPMjVaSFNSWURQNTdMTSIsImlzc3VlZCI6MTc3ODQ5NTI1MjgzOSwibWV0aG9kcyI6WyJ0b2tlbiJdLCJyb2xlIjpbXSwicm9sZXRhZ2VzIjpbXSwidGltZW91dF9hdCI6MTc3ODU4MTY1MjgzOSwidXNlciI6eyJkb21haW4iOnsiaWQiOiIwN2QxMmE0ZGY0Yjg0MDE0YWM4OTgzMDBiNjMzNzk3NyIsIm5hbWUiOiJoaWRfNmFxazBhNW10em9sbmRwIn0sImlkIjoiY2FjZGY0MTQ5OTMzNGQzM2E4ZjAwZTY1YzQ1YzI2YjAiLCJuYW1lIjoid3p5IiwicGFzc3dvcmRfZXhwaXJlc19hdCI6IiIsInVzZXJfdHlwZSI6MTZ9fS3-ddo9adN9EberJGtMlYUhANwS5wSSMIdKWBBJ9ceegZW3WE3euZYsI1cBPKVZD6MwWl2psulmlMdoLyTj0a4KOOaMiL3S4JHxCRDRbvtNP2umjDSmeadTpaRHycKTFXrb-l3yYWy8v6aeqgAWm24m89QU-6nTmgmWkzGnyZ0NMDDO5G-4p2opkwnHsbVfc_ZcQYiruYcPCtk2Wd3NX3gJL82Cd0oyhRkVMQyo2ifyL_3u9-PGaPh5Btfunxty8SdtcXzD23t0-pShWuFkqDmaporX6wKUnXMUNkdd-zZ5tgzNlOrVFzC1dwR-ws_0DD1cUvL40vpI-qUZ5GB7bHU%3D&Signature=tbOkVoUzsdmQ79NYQrDkOh0Ltpo%3D\")",
-      "Bash(pkill -f \"vllm-ascend\")"
+      "Bash(pkill -f \"vllm-ascend\")",
+      "Bash(/home/leon/miniconda3/envs/2022_VLMO/bin/python -c \"from transformers import BlipProcessor, BlipForConditionalGeneration, BlipForImageTextRetrieval; print\\('BLIP支持OK'\\)\")",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('/home/leon/DataSet/HuggingFace/2022_VLMO/data/coco_train.json'\\)\\); print\\(type\\(d\\)\\); print\\(d[0] if isinstance\\(d,list\\) else list\\(d.items\\(\\)\\)[:2]\\)\")",
+      "Bash(chmod +x /home/leon/GitHub/Paper/2022_BLIP/download_data.sh)",
+      "Bash(bash download_data.sh)",
+      "Bash(chmod +x /home/leon/GitHub/Paper/2022_BLIP/run_caption_train.sh /home/leon/GitHub/Paper/2022_BLIP/run_caption_eval.sh /home/leon/GitHub/Paper/2022_BLIP/run_retrieval_eval.sh)",
+      "Bash(python3 prepare_karpathy_splits.py)",
+      "Bash(python3 -c \"import modelscope; print\\(modelscope.__version__\\)\")",
+      "Bash(python3 download_model.py)",
+      "Bash(ln -sf /home/leon/DataSet/HuggingFace/2022_VLMO/data/coco /home/leon/DataSet/HuggingFace/2022_BLIP/data/coco)"
     ],
     "additionalDirectories": [
       "/home/leon/DataSet/HuggingFace/2022_VLMO/data/coco/images",

@@ -1,0 +1,32 @@
+# BLIP Image Captioning - COCO Karpathy split
+# Fine-tune on train, evaluate on test (5K images)
+# Optimized for single RTX 3090 (24GB)
+
+model_name: "Salesforce/blip-image-captioning-base"
+
+# Paths relative to DATA_DIR (resolved in config.py via cfg.resolve_data)
+# coco/ is a symlink to 2022_VLMO/data/coco
+image_root: ""   # = DATA_DIR itself; images are at coco/images/...
+train_ann:  "coco_karpathy_train.json"
+val_ann:    "coco_karpathy_val.json"
+test_ann:   "coco_karpathy_test.json"
+
+output_dir: "caption"   # relative to OUTPUT_DIR
+
+# Training hyperparams (RTX 3090 24GB)
+epochs: 5
+batch_size: 32
+grad_accum: 1
+lr: 1.0e-5
+weight_decay: 0.05
+warmup_ratio: 0.1
+max_grad_norm: 1.0
+fp16: true
+gradient_checkpointing: false
+
+num_workers: 4
+
+# Generation
+eval_batch_size: 32
+max_gen_length: 30
+num_beams: 3

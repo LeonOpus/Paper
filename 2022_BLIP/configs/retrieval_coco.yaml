@@ -1,0 +1,13 @@
+# BLIP Image-Text Retrieval - COCO Karpathy test split
+# blip-itm-base-coco is already fine-tuned on COCO, so this is eval-only
+
+model_name: "Salesforce/blip-itm-base-coco"
+
+image_root: ""   # = DATA_DIR; coco/ is a symlink to 2022_VLMO/data/coco
+test_ann:   "coco_karpathy_test.json"   # relative to DATA_DIR
+
+output_dir: "retrieval"   # relative to OUTPUT_DIR
+
+eval_batch_size: 64
+text_batch_size: 128
+num_workers: 4
