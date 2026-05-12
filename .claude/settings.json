@@ -121,10 +121,17 @@
       "Bash(kill -0 8014)",
       "Bash(pkill -f \"stability_test\\\\|demo_retrieval\")",
       "Bash(kill -9 6575)",
-      "Bash(kill -0 8532)"
+      "Bash(kill -0 8532)",
+      "Bash(top -bn1)",
+      "Bash(modelscope download *)",
+      "Bash(kill 35173)",
+      "Bash(nohup wget -q --show-progress -O /home/leon/vllm-ascend0.13.0rc3-ma-user-a2-v2.zip 'https://huangsy.obs.cn-southwest-2.myhuaweicloud.com:443/vllm-ascend0.13.0rc3-ma-user-a2-v2.zip?AccessKeyId=HST3U5O25ZHSRYDP57LM&Expires=1778531687&x-obs-security-token=gg5jbi1zb3V0aHdlc3QtMlBoeyJhY2Nlc3MiOiJIU1QzVTVPMjVaSFNSWURQNTdMTSIsImlzc3VlZCI6MTc3ODQ5NTI1MjgzOSwibWV0aG9kcyI6WyJ0b2tlbiJdLCJyb2xlIjpbXSwicm9sZXRhZ2VzIjpbXSwidGltZW91dF9hdCI6MTc3ODU4MTY1MjgzOSwidXNlciI6eyJkb21haW4iOnsiaWQiOiIwN2QxMmE0ZGY0Yjg0MDE0YWM4OTgzMDBiNjMzNzk3NyIsIm5hbWUiOiJoaWRfNmFxazBhNW10em9sbmRwIn0sImlkIjoiY2FjZGY0MTQ5OTMzNGQzM2E4ZjAwZTY1YzQ1YzI2YjAiLCJuYW1lIjoid3p5IiwicGFzc3dvcmRfZXhwaXJlc19hdCI6IiIsInVzZXJfdHlwZSI6MTZ9fS3-ddo9adN9EberJGtMlYUhANwS5wSSMIdKWBBJ9ceegZW3WE3euZYsI1cBPKVZD6MwWl2psulmlMdoLyTj0a4KOOaMiL3S4JHxCRDRbvtNP2umjDSmeadTpaRHycKTFXrb-l3yYWy8v6aeqgAWm24m89QU-6nTmgmWkzGnyZ0NMDDO5G-4p2opkwnHsbVfc_ZcQYiruYcPCtk2Wd3NX3gJL82Cd0oyhRkVMQyo2ifyL_3u9-PGaPh5Btfunxty8SdtcXzD23t0-pShWuFkqDmaporX6wKUnXMUNkdd-zZ5tgzNlOrVFzC1dwR-ws_0DD1cUvL40vpI-qUZ5GB7hHU%3D&Signature=tbOkVoUzsdmQ79NYQrDkOh0Ltpo%3D')",
+      "Bash(wget -S --spider \"https://huangsy.obs.cn-southwest-2.myhuaweicloud.com:443/vllm-ascend0.13.0rc3-ma-user-a2-v2.zip?AccessKeyId=HST3U5O25ZHSRYDP57LM&Expires=1778531687&x-obs-security-token=gg5jbi1zb3V0aHdlc3QtMlBoeyJhY2Nlc3MiOiJIU1QzVTVPMjVaSFNSWURQNTdMTSIsImlzc3VlZCI6MTc3ODQ5NTI1MjgzOSwibWV0aG9kcyI6WyJ0b2tlbiJdLCJyb2xlIjpbXSwicm9sZXRhZ2VzIjpbXSwidGltZW91dF9hdCI6MTc3ODU4MTY1MjgzOSwidXNlciI6eyJkb21haW4iOnsiaWQiOiIwN2QxMmE0ZGY0Yjg0MDE0YWM4OTgzMDBiNjMzNzk3NyIsIm5hbWUiOiJoaWRfNmFxazBhNW10em9sbmRwIn0sImlkIjoiY2FjZGY0MTQ5OTMzNGQzM2E4ZjAwZTY1YzQ1YzI2YjAiLCJuYW1lIjoid3p5IiwicGFzc3dvcmRfZXhwaXJlc19hdCI6IiIsInVzZXJfdHlwZSI6MTZ9fS3-ddo9adN9EberJGtMlYUhANwS5wSSMIdKWBBJ9ceegZW3WE3euZYsI1cBPKVZD6MwWl2psulmlMdoLyTj0a4KOOaMiL3S4JHxCRDRbvtNP2umjDSmeadTpaRHycKTFXrb-l3yYWy8v6aeqgAWm24m89QU-6nTmgmWkzGnyZ0NMDDO5G-4p2opkwnHsbVfc_ZcQYiruYcPCtk2Wd3NX3gJL82Cd0oyhRkVMQyo2ifyL_3u9-PGaPh5Btfunxty8SdtcXzD23t0-pShWuFkqDmaporX6wKUnXMUNkdd-zZ5tgzNlOrVFzC1dwR-ws_0DD1cUvL40vpI-qUZ5GB7bHU%3D&Signature=tbOkVoUzsdmQ79NYQrDkOh0Ltpo%3D\")",
+      "Bash(pkill -f \"vllm-ascend\")"
     ],
     "additionalDirectories": [
-      "/home/leon/DataSet/HuggingFace/2022_VLMO/data/coco/images"
+      "/home/leon/DataSet/HuggingFace/2022_VLMO/data/coco/images",
+      "/tmp"
     ]
   }
 }

@@ -17,10 +17,10 @@ PAPER_ROOT = _find_paper_root()
 PAPER_NAME = os.path.basename(PAPER_ROOT)
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-PAPER_DATA = os.environ.get("PAPER_DATA", f"/home/leon/DataSet/HuggingFace/{PAPER_NAME}")
-HF_HOME = os.environ.get("HF_HOME", "/home/leon/Model/HuggingFace")
+PAPER_DATA = os.environ.get("PAPER_DATA", os.path.join(os.path.expanduser("~"), "DataSet", "HuggingFace", PAPER_NAME))
+HF_HOME = os.environ.get("HF_HOME", os.path.join(os.path.expanduser("~"), "Model", "HuggingFace"))
 HF_HUB_CACHE = os.environ.get("HF_HUB_CACHE", os.path.join(HF_HOME, "hub"))
-HF_DATASETS_CACHE = os.environ.get("HF_DATASETS_CACHE", "/home/leon/DataSet/HuggingFace")
+HF_DATASETS_CACHE = os.environ.get("HF_DATASETS_CACHE", os.path.join(os.path.expanduser("~"), "DataSet", "HuggingFace"))
 HF_MODULES_CACHE = os.path.join(HF_HOME, "modules")
 TRANSFORMERS_CACHE = os.path.join(HF_HOME, "transformers")
 
@@ -31,7 +31,7 @@ os.environ["HF_MODULES_CACHE"] = HF_MODULES_CACHE
 os.environ["TRANSFORMERS_CACHE"] = TRANSFORMERS_CACHE
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 
-OUTPUT_ROOT = os.environ.get("OUTPUT_ROOT", f"/home/leon/Output/{PAPER_NAME}")
+OUTPUT_ROOT = os.environ.get("OUTPUT_ROOT", os.path.join(os.path.expanduser("~"), "Output", PAPER_NAME))
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", os.path.join(OUTPUT_ROOT, "output"))
 OUTPUT_BASE = OUTPUT_DIR
 LOG_BASE = os.path.join(OUTPUT_ROOT, "logs")
