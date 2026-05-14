@@ -17,12 +17,7 @@ import config as cfg
 
 from dataset import CocoCaptionDataset
 
-try:
-    from pycocoevalcap.eval import COCOEvalCap
-    from pycocotools.coco import COCO
-except ImportError:
-    print("WARNING: pycocoevalcap not installed. Run: pip install pycocoevalcap pycocotools")
-    COCOEvalCap = None
+from compute_metrics import compute as compute_metrics
 
 
 def evaluate(args):
@@ -77,45 +72,11 @@ def evaluate(args):
     json.dump(results, open(result_file, "w"))
     print(f"Saved {len(results)} predictions to {result_file}")
 
-    if COCOEvalCap is None:
-        print("Install pycocoevalcap to compute metrics.")
-        return
-
-    # Build COCO-format annotation file from our json
-    ann_file = cfg.resolve_data(conf["test_ann"])
-    anns_raw = json.load(open(ann_file))
-    # Build coco annotation dict
-    coco_anns = {"images": [], "annotations": [], "type": "captions", "info": {}, "licenses": []}
-    seen_imgs = {}
-    ann_id = 0
-    for item in anns_raw:
-        iid = item.get("image_id")
-        if iid is None:
-            continue
-        if iid not in seen_imgs:
-            seen_imgs[iid] = True
-            coco_anns["images"].append({"id": iid})
-        cap = item["caption"]
-        if isinstance(cap, list):
-            for c in cap:
-                coco_anns["annotations"].append({"image_id": iid, "id": ann_id, "caption": c})
-                ann_id += 1
-        else:
-            coco_anns["annotations"].append({"image_id": iid, "id": ann_id, "caption": cap})
-            ann_id += 1
-
-    coco_ann_file = os.path.join(output_dir, "coco_gt_captions.json")
-    json.dump(coco_anns, open(coco_ann_file, "w"))
-
-    from pycocotools.coco import COCO as _COCO
-    coco_gt = _COCO(coco_ann_file)
-    coco_res = coco_gt.loadRes(result_file)
-    coco_eval = COCOEvalCap(coco_gt, coco_res)
-    coco_eval.evaluate()
-
-    print("\n=== Captioning Results ===")
-    for metric, score in coco_eval.eval.items():
-        print(f"  {metric}: {score:.4f}")
+    compute_metrics(
+        result_file=result_file,
+        ann_file=cfg.resolve_data(conf["test_ann"]),
+        output_dir=output_dir,
+    )
 
 
 if __name__ == "__main__":
