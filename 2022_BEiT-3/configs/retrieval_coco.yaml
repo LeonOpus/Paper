@@ -1,0 +1,11 @@
+# BEiT-3 Image-Text Retrieval - COCO Karpathy test split
+# Paper Table 5: TR R@1=84.8 / IR R@1=67.2 (base)
+
+model_name: "microsoft/beit-3-base-patch16-224-retrieval-coco"
+
+image_root:  ""                      # = DATA_DIR, coco/ symlink to 2022_VLMO
+test_ann:    "coco_karpathy_test.json"
+
+output_dir:  "retrieval"
+eval_batch_size: 32
+num_workers: 4

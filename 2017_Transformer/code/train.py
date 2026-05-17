@@ -13,30 +13,27 @@ import torch.nn as nn
 from torch.cuda.amp import GradScaler, autocast
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as cfg
-from code.model import Transformer
-from code.dataset import build_loader
+from model import Transformer
+from dataset import build_loader
 
 
 class LabelSmoothingLoss(nn.Module):
     def __init__(self, vocab_size: int, smoothing: float = 0.1, pad_idx: int = 0):
         super().__init__()
         self.smoothing = smoothing
-        self.vocab_size = vocab_size
         self.pad_idx = pad_idx
 
     def forward(self, logits, target):
         # logits: (B*T, V), target: (B*T,)
-        B, V = logits.shape
-        with torch.no_grad():
-            dist = torch.full((B, V), self.smoothing / (V - 2), device=logits.device)
-            dist[:, self.pad_idx] = 0.0
-            dist.scatter_(1, target.unsqueeze(1), 1.0 - self.smoothing)
-            mask = target == self.pad_idx
-            dist[mask] = 0.0
-        loss = -(dist * torch.log_softmax(logits, dim=-1)).sum(dim=-1)
-        n_tokens = (~mask).sum()
-        return loss.sum() / n_tokens.clamp(min=1)
+        # Avoid materializing full (B*T, V) dist — compute NLL + uniform separately
+        log_probs = torch.log_softmax(logits, dim=-1)
+        nll  = -log_probs.gather(1, target.unsqueeze(1)).squeeze(1)   # (B*T,)
+        smooth = -log_probs.mean(dim=-1)                               # (B*T,)
+        loss = (1.0 - self.smoothing) * nll + self.smoothing * smooth
+        mask = target == self.pad_idx
+        return loss.masked_fill(mask, 0.0).sum() / (~mask).sum().clamp(min=1)
 
 
 class WarmupScheduler:
@@ -95,7 +92,7 @@ def train(args):
     criterion = LabelSmoothingLoss(conf["vocab_size"], conf["label_smoothing"])
     optimizer = torch.optim.Adam(model.parameters(), lr=1.0, betas=(0.9, 0.98), eps=1e-9)
     scheduler = WarmupScheduler(optimizer, conf["d_model"], conf["warmup_steps"])
-    scaler    = GradScaler(enabled=conf.get("fp16", True))
+    scaler    = GradScaler(enabled=conf.get("fp16", True), init_scale=256, growth_interval=2000)
 
     out_rel = conf.get("output_dir", "")
     output_dir = os.path.join(cfg.OUTPUT_DIR, out_rel) if out_rel else cfg.OUTPUT_DIR
@@ -119,7 +116,13 @@ def train(args):
 
             with autocast(enabled=conf.get("fp16", True)):
                 logits = model(src, tgt_in)                             # (B, T, V)
-                loss = criterion(logits.view(-1, conf["vocab_size"]), tgt_out.view(-1))
+            loss = criterion(logits.float().view(-1, logits.size(-1)), tgt_out.view(-1))
+
+            if torch.isnan(loss) or torch.isinf(loss):
+                optimizer.zero_grad()
+                lr = scheduler.step()
+                global_step += 1
+                continue
 
             scaler.scale(loss).backward()
             scaler.unscale_(optimizer)
@@ -137,6 +140,19 @@ def train(args):
 
         avg_loss = epoch_loss / len(train_loader)
         log(f"Epoch {epoch} done. avg_loss={avg_loss:.4f} ppl={math.exp(avg_loss):.2f}")
+
+        # Validation
+        model.eval()
+        val_loss = 0.0
+        with torch.no_grad():
+            for src, tgt_in, tgt_out in val_loader:
+                src, tgt_in, tgt_out = src.to(device), tgt_in.to(device), tgt_out.to(device)
+                with autocast(enabled=conf.get("fp16", True)):
+                    logits = model(src, tgt_in)
+                loss = criterion(logits.float().view(-1, logits.size(-1)), tgt_out.view(-1))
+                val_loss += loss.item()
+        val_loss /= len(val_loader)
+        log(f"Epoch {epoch} val_loss={val_loss:.4f} val_ppl={math.exp(val_loss):.2f}")
 
         ckpt = os.path.join(output_dir, f"checkpoint_epoch{epoch}.pt")
         torch.save({

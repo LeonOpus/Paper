@@ -189,7 +189,8 @@
       "Bash(kill 67872)",
       "Bash(tar -tzf /home/leon/DataSet/HuggingFace/2017_Transformer/data/tmp/test-full.tgz)",
       "Bash(rm /home/leon/DataSet/HuggingFace/2017_Transformer/data/test.json)",
-      "Bash(/home/leon/miniconda3/envs/2017_Transformer/bin/python download_data.py)"
+      "Bash(/home/leon/miniconda3/envs/2017_Transformer/bin/python download_data.py)",
+      "Bash(/home/leon/miniconda3/envs/2022_BLIP/bin/python -c ' *)"
     ],
     "additionalDirectories": [
       "/home/leon/DataSet/HuggingFace/2022_VLMO/data/coco/images",

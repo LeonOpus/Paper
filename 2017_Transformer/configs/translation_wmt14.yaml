@@ -16,7 +16,7 @@ dropout: 0.1
 
 # Training
 epochs: 20
-batch_size: 4096         # tokens per batch (dynamic batching)
+batch_size_sentences: 64
 warmup_steps: 4000
 label_smoothing: 0.1
 max_grad_norm: 1.0

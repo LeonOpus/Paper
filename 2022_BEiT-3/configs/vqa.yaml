@@ -1,0 +1,11 @@
+# BEiT-3 Visual Question Answering - VQAv2
+# Paper Table 2: test-dev 84.2 (base)
+
+model_name: "microsoft/beit-3-base-patch16-480-vqa"
+
+image_root:  ""                      # = DATA_DIR
+test_ann:    "vqa_test.json"
+
+output_dir:  "vqa"
+eval_batch_size: 16
+num_workers: 4
