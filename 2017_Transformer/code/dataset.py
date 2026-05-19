@@ -1,5 +1,5 @@
 """
-WMT14 EN-DE dataset with SentencePiece tokenization and token-budget batching.
+WMT14 英德翻译数据集，使用 SentencePiece 分词并按句子数量组批。
 """
 import json
 import os
@@ -30,7 +30,7 @@ class TranslationDataset(Dataset):
     def __getitem__(self, idx):
         src_ids, tgt_ids = self.pairs[idx]
         src = torch.tensor(src_ids, dtype=torch.long)
-        # decoder input: <bos> + tgt; target: tgt + <eos>
+        # 解码器输入：<bos> + tgt；目标序列：tgt + <eos>
         tgt_in  = torch.tensor([self.bos] + tgt_ids, dtype=torch.long)
         tgt_out = torch.tensor(tgt_ids + [self.eos], dtype=torch.long)
         return src, tgt_in, tgt_out

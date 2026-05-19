@@ -1,8 +1,8 @@
 """
-Download WMT14 EN-DE from statmt.org and train a shared SentencePiece BPE tokenizer.
-Training sources: Europarl v7 + News Commentary v9 (≈2.1M pairs, lighter than full WMT14)
-Test set: newstest2014 (3003 pairs, official WMT14 benchmark)
-Usage: python download_data.py
+从 statmt.org 下载 WMT14 英德数据集并训练共享的 SentencePiece BPE 分词器。
+训练来源：Europarl v7 + News Commentary v9（约 210 万句对，比完整 WMT14 更轻量）
+测试集：newstest2014（3003 句对，WMT14 官方基准）
+用法：python download_data.py
 """
 import os
 import sys
@@ -34,12 +34,12 @@ NEWSTEST2013_URL = "http://www.statmt.org/wmt14/dev.tgz"
 
 def wget(url: str, dest: str):
     print(f"Downloading (or resuming) {os.path.basename(dest)} ...")
-    # -c lets wget skip complete files and resume partials automatically
+    # -c 参数让 wget 自动跳过已完成的文件，并对未完成的文件断点续传
     subprocess.run(["wget", "-c", "--show-progress", "-O", dest, url], check=True)
 
 
 def extract_parallel(tgz_path: str, stem: str, tmp_dir: str):
-    """Extract .en and .de files from a tgz archive."""
+    """从 tgz 压缩包中提取 .en 和 .de 文件。"""
     en_out = os.path.join(tmp_dir, stem + ".en")
     de_out = os.path.join(tmp_dir, stem + ".de")
     if os.path.exists(en_out) and os.path.exists(de_out):
@@ -68,18 +68,18 @@ def build_pairs(en_lines, de_lines, max_len_chars=500):
 
 
 def parse_sgm(content: str) -> list:
-    """Extract text from WMT SGM format."""
+    """从 WMT SGM 格式中提取文本内容。"""
     import re
     return re.findall(r'<seg[^>]*>(.*?)</seg>', content, re.DOTALL)
 
 
 def extract_newstest(tgz_path: str, tmp_dir: str, year: str):
-    """Extract newstest{year} EN-DE src/ref from WMT SGM tgz."""
+    """从 WMT SGM tgz 中提取 newstest{year} 英德源文与参考译文。"""
     en_lines, de_lines = [], []
     with tarfile.open(tgz_path) as tar:
         for member in tar.getmembers():
             n = member.name
-            # EN->DE: src=en, ref=de  (e.g. newstest2014-deen-src.en.sgm)
+            # 英->德：源文为英文，参考译文为德文（如 newstest2014-deen-src.en.sgm）
             if f"newstest{year}-deen-src.en.sgm" in n:
                 f = tar.extractfile(member)
                 en_lines = parse_sgm(f.read().decode("utf-8", errors="ignore"))
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     tmp = os.path.join(cfg.DATA_DIR, "tmp")
     os.makedirs(tmp, exist_ok=True)
 
-    # --- Download archives ---
+    # --- 下载压缩包 ---
     tgz_paths = {}
     for name, (url, _) in SOURCES.items():
         dest = os.path.join(tmp, os.path.basename(url))
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     wget(NEWSTEST2014_URL, test_tgz)
     wget(NEWSTEST2013_URL, dev_tgz)
 
-    # --- Extract parallel files ---
+    # --- 解压平行语料文件 ---
     all_train_pairs = []
     for name, (_, stem) in SOURCES.items():
         en_f, de_f = extract_parallel(tgz_paths[name], stem, tmp)
@@ -115,7 +115,7 @@ if __name__ == "__main__":
         all_train_pairs.extend(pairs)
     print(f"Total train pairs: {len(all_train_pairs)}")
 
-    # --- Train tokenizer ---
+    # --- 训练分词器 ---
     tok_model = os.path.join(cfg.DATA_DIR, "tokenizer.model")
     if not os.path.exists(tok_model):
         import sentencepiece as spm
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     else:
         print(f"[skip] tokenizer exists")
 
-    # --- Save splits ---
+    # --- 保存数据划分文件 ---
     train_out = os.path.join(cfg.DATA_DIR, "train.json")
     if not os.path.exists(train_out):
         json.dump(all_train_pairs, open(train_out, "w"), ensure_ascii=False)

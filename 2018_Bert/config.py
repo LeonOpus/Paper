@@ -18,7 +18,7 @@ PAPER_NAME = os.path.basename(PAPER_ROOT)
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 MODEL_NAME = os.environ.get("MODEL_NAME", "bert-base-uncased")
 
-# ---- Per-paper data/cache roots ----
+# ---- 各论文的数据/缓存根目录 ----
 PAPER_DATA = os.environ.get("PAPER_DATA", f"/home/leon/DataSet/HuggingFace/{PAPER_NAME}")
 HF_HOME = os.environ.get("HF_HOME", "/home/leon/Model/HuggingFace")
 HF_HUB_CACHE = os.environ.get("HF_HUB_CACHE", os.path.join(HF_HOME, "hub"))

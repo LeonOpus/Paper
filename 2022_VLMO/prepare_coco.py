@@ -1,10 +1,10 @@
 """
-Convert official COCO caption annotations to ALBEF/VLMO JSON format.
+将官方 COCO 字幕标注转换为 ALBEF/VLMO JSON 格式。
 
-ALBEF format: [{"image": "coco/images/train2014/xxx.jpg", "caption": "..."}, ...]
-One entry per caption (not per image), so ~5 captions per image.
+ALBEF 格式：[{"image": "coco/images/train2014/xxx.jpg", "caption": "..."}, ...]
+每条字幕对应一条记录（而非每张图片），因此每张图片约有 5 条记录。
 
-Usage:
+使用方法：
     python prepare_coco.py
 """
 
@@ -46,7 +46,7 @@ def main():
         print("Run download_data.sh first.")
         sys.exit(1)
 
-    # Unzip into coco/annotations/
+    # 解压至 coco/annotations/
     import zipfile
     ann_dir = DATA_DIR / "coco" / "annotations"
     if not ann_dir.exists():
@@ -60,7 +60,7 @@ def main():
 
     train_records = convert(train_ann, "train", "train2014")
 
-    # Split val → val (1000 images) + test (rest)
+    # 将 val 拆分为 val（1000 张图片）和 test（其余图片）
     with open(val_ann) as f:
         val_raw = json.load(f)
 
@@ -84,7 +84,7 @@ def main():
             json.dump(records, f, indent=2)
         print(f"Wrote {len(records):,} records → {out}")
 
-    print("\nDone. Update configs/Retrieval_coco.yaml if needed.")
+    print("\n完成。如有需要请更新 configs/Retrieval_coco.yaml。")
 
 
 if __name__ == "__main__":

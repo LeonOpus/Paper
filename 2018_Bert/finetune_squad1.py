@@ -89,7 +89,7 @@ def preprocess_train(examples):
             idx += 1
         ctx_end = idx - 1
 
-        # 答案不在此 window 内，标为 [CLS]
+        # 答案不在此窗口内，标为 [CLS]
         if offset[ctx_start][0] > end_char or offset[ctx_end][1] < start_char:
             start_positions.append(0)
             end_positions.append(0)

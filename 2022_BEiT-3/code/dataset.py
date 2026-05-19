@@ -1,5 +1,5 @@
 """
-Datasets for BEiT-3 evaluation on COCO retrieval and VQAv2.
+BEiT-3 在 COCO 检索和 VQAv2 任务上的数据集定义。
 """
 import json
 import os
@@ -8,16 +8,16 @@ from torch.utils.data import Dataset
 
 
 class CocoRetrievalDataset(Dataset):
-    """Returns (image, caption, img_idx, cap_idx) for COCO Karpathy test split."""
+    """返回 COCO Karpathy 测试集中的 (image, caption, img_idx, cap_idx) 四元组。"""
 
     def __init__(self, ann_file: str, image_root: str, transform):
         anns = json.load(open(ann_file))
         self.transform = transform
         self.image_root = image_root
 
-        # deduplicate images while preserving order
-        self.images = []          # list of {"image_id", "image"}
-        self.texts  = []          # list of caption strings
+        # 去重图像，同时保留原始顺序
+        self.images = []          # 元素格式为 {"image_id", "image"} 的列表
+        self.texts  = []          # 标注文本字符串列表
         self.img2txt = {}         # img_idx -> [cap_idx, ...]
         self.txt2img = {}         # cap_idx -> img_idx
 

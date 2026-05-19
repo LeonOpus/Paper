@@ -1,7 +1,7 @@
 """
-Compute captioning metrics without Java.
-Patches pycocoevalcap's PTB tokenizer with a Python fallback.
-Usage: python compute_metrics.py --config ../configs/caption_coco.yaml
+无需 Java 即可计算图像描述评估指标。
+将 pycocoevalcap 的 PTB 分词器替换为纯 Python 实现。
+用法：python compute_metrics.py --config ../configs/caption_coco.yaml
 """
 import re
 import json
@@ -20,9 +20,9 @@ def _python_tokenize(caption: str) -> str:
 
 def _patch_pycocoeval():
     """
-    Replace Java-dependent components in pycocoevalcap with Python equivalents.
-    Keeps: BLEU, ROUGE-L, CIDEr (all pure Python).
-    Drops: METEOR, SPICE (both need Java).
+    将 pycocoevalcap 中依赖 Java 的组件替换为纯 Python 实现。
+    保留：BLEU、ROUGE-L、CIDEr（均为纯 Python）。
+    移除：METEOR、SPICE（均需要 Java）。
     """
     import pycocoevalcap.tokenizer.ptbtokenizer as ptb
     import pycocoevalcap.eval as evalmod
@@ -40,7 +40,7 @@ def _patch_pycocoeval():
 
     ptb.PTBTokenizer = PythonTokenizer
 
-    # Remove Java-dependent scorers (Meteor, SPICE) from the eval loop
+    # 从评估循环中移除依赖 Java 的评分器（Meteor、SPICE）
     _orig_evaluate = evalmod.COCOEvalCap.evaluate
 
     def _patched_evaluate(self):

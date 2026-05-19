@@ -1,7 +1,7 @@
 """
-Evaluate captioning on COCO Karpathy test split.
-Reports CIDEr, BLEU@4, METEOR, ROUGE-L, SPICE.
-Usage: python eval_caption.py --config ../configs/caption_coco.yaml [--checkpoint path/to/ckpt]
+在 COCO Karpathy 测试集上评估图像描述生成性能。
+报告 CIDEr、BLEU@4、METEOR、ROUGE-L、SPICE 指标。
+用法：python eval_caption.py --config ../configs/caption_coco.yaml [--checkpoint path/to/ckpt]
 """
 import argparse
 import json

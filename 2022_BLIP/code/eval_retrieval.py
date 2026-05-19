@@ -1,7 +1,7 @@
 """
-Evaluate image-text retrieval on COCO Karpathy test split.
-Reports R@1, R@5, R@10 for TR (text retrieval) and IR (image retrieval).
-Usage: python eval_retrieval.py --config ../configs/retrieval_coco.yaml
+在 COCO Karpathy 测试集上评估图文检索性能。
+报告文本检索（TR）和图像检索（IR）的 R@1、R@5、R@10 指标。
+用法：python eval_retrieval.py --config ../configs/retrieval_coco.yaml
 """
 import argparse
 import json
@@ -20,7 +20,7 @@ from dataset import CocoRetrievalDataset
 
 @torch.no_grad()
 def extract_image_features(model, dataset, device, batch_size=64, num_workers=4):
-    """Extract image embeddings for all images in the dataset."""
+    """提取数据集中所有图像的嵌入向量。"""
     from torch.utils.data import DataLoader as DL
 
     class ImgDS(torch.utils.data.Dataset):
@@ -42,7 +42,7 @@ def extract_image_features(model, dataset, device, batch_size=64, num_workers=4)
 
 @torch.no_grad()
 def extract_text_features(model, dataset, device, batch_size=128, num_workers=4):
-    """Extract text embeddings for all captions in the dataset."""
+    """提取数据集中所有标注文本的嵌入向量。"""
     from torch.utils.data import DataLoader as DL
 
     class TxtDS(torch.utils.data.Dataset):
@@ -70,8 +70,8 @@ def extract_text_features(model, dataset, device, batch_size=128, num_workers=4)
 
 def recall_at_k(scores, gt_map, ks=(1, 5, 10)):
     """
-    scores: (N_query, N_target) similarity matrix
-    gt_map: list of length N_query, each entry is a list/int of correct target indices
+    scores: 形状为 (N_query, N_target) 的相似度矩阵
+    gt_map: 长度为 N_query 的列表，每个元素为对应的正确目标索引（列表或整数）
     """
     results = {}
     n = scores.shape[0]
@@ -111,18 +111,18 @@ def evaluate(args):
     txt_feats = extract_text_features(model, dataset, device,
                                       batch_size=conf.get("text_batch_size", 128))
 
-    # Similarity matrix (n_img x n_txt)
+    # 相似度矩阵，形状为 (n_img x n_txt)
     sims = img_feats @ txt_feats.T  # (N_img, N_txt)
 
-    # TR: for each text, find its image (text -> image retrieval)
-    # IR: for each image, find its texts (image -> text retrieval)
+    # TR：对每条文本，检索其对应图像（文本 -> 图像检索）
+    # IR：对每张图像，检索其对应文本（图像 -> 文本检索）
 
-    # Text Retrieval (TR): query=text, gallery=images
-    # sims.T is (N_txt, N_img)
+    # 文本检索（TR）：查询=文本，库=图像
+    # sims.T 形状为 (N_txt, N_img)
     tr_scores = sims.T
     tr_r = recall_at_k(tr_scores, dataset.txt2img)
 
-    # Image Retrieval (IR): query=image, gallery=texts
+    # 图像检索（IR）：查询=图像，库=文本
     ir_r = recall_at_k(sims, dataset.img2txt)
 
     print("\n=== COCO Retrieval Results ===")

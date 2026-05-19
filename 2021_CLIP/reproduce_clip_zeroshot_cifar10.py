@@ -26,7 +26,7 @@ CIFAR10_CLASSES = [
     "truck",
 ]
 
-# A compact set of prompt templates inspired by CLIP zero-shot evaluation.
+# 参照 CLIP 零样本评估的一组精简提示词模板。
 CLIP_PROMPT_TEMPLATES = [
     "a photo of a {}",
     "a blurry photo of a {}",

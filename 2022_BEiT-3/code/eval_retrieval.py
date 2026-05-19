@@ -1,8 +1,8 @@
 """
-Evaluate BEiT-3 image-text retrieval on COCO Karpathy test split.
-Uses Microsoft's official torchscale-based implementation.
-Reports R@1/R@5/R@10 for TR and IR.
-Usage: python eval_retrieval.py --config ../configs/retrieval_coco.yaml
+在 COCO Karpathy 测试集上评估 BEiT-3 图文检索性能。
+使用微软官方基于 torchscale 的实现。
+报告文本检索（TR）和图像检索（IR）的 R@1/R@5/R@10 指标。
+用法：python eval_retrieval.py --config ../configs/retrieval_coco.yaml
 """
 import argparse
 import json
@@ -76,7 +76,7 @@ def extract_features(model, tokenizer, dataset_info, image_root, device,
     images    = dataset_info["images"]
     texts     = dataset_info["texts"]
 
-    # Image features
+    # 提取图像特征
     img_ds = CocoImageDataset(images, image_root, transform)
     img_loader = DataLoader(img_ds, batch_size=batch_size,
                             num_workers=num_workers, pin_memory=True)
@@ -88,7 +88,7 @@ def extract_features(model, tokenizer, dataset_info, image_root, device,
             img_feats.append(F.normalize(vision_cls, dim=-1).cpu())
     img_feats = torch.cat(img_feats)
 
-    # Text features
+    # 提取文本特征
     txt_feats = []
     for i in tqdm(range(0, len(texts), batch_size), desc="Text features"):
         batch_texts = texts[i:i + batch_size]
@@ -119,7 +119,7 @@ def evaluate(args):
     spm_path = os.path.join(MODEL_DIR, "beit3.spm")
     tokenizer = XLMRobertaTokenizer(spm_path)
 
-    # Build dataset info
+    # 构建数据集信息
     anns = json.load(open(cfg.resolve_data(conf["test_ann"])))
     images, texts = [], []
     img2txt, txt2img = {}, {}
@@ -147,8 +147,8 @@ def evaluate(args):
     )
 
     sims  = img_feats @ txt_feats.T
-    # TR = Text Retrieval = image queries → find captions (I2T), avg over images
-    # IR = Image Retrieval = text queries → find images (T2I), avg over texts
+    # TR = 文本检索 = 以图像为查询检索标注（I2T），对所有图像取平均
+    # IR = 图像检索 = 以文本为查询检索图像（T2I），对所有文本取平均
     tr_r  = recall_at_k(sims,   img2txt)
     ir_r  = recall_at_k(sims.T, txt2img)
 

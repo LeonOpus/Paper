@@ -1,10 +1,10 @@
 """
-VLMO 10-minute reproduction demo.
+VLMO 10 分钟复现演示。
 
-Samples 4000 training pairs from COCO, trains 3 epochs,
-then evaluates on the full val set and prints retrieval metrics.
+从 COCO 中采样 4000 条训练样本，训练 3 个 epoch，
+然后在完整验证集上评估并打印检索指标。
 
-Usage:
+使用方法：
     python demo_retrieval.py
 """
 
@@ -30,12 +30,12 @@ import config as cfg
 from datasets.retrieval_dataset import RetrievalDataset, build_transform
 from models.vlmo import VLMoForRetrieval, build_vlmo_base
 
-# ── Config ────────────────────────────────────────────────────────────────────
+# ── 配置 ──────────────────────────────────────────────────────────────────────
 TRAIN_SAMPLES = 4000
 BATCH_TRAIN   = 64
 BATCH_EVAL    = 64
 EPOCHS        = 3
-LR            = 1e-4   # higher lr for fast demo convergence
+LR            = 1e-4   # 较大学习率以加速演示收敛
 IMAGE_RES     = 224
 EMBED_DIM     = 256
 TEMP          = 0.07
@@ -86,7 +86,7 @@ def main():
     train_tf      = build_transform(IMAGE_RES, is_train=True)
     val_tf        = build_transform(IMAGE_RES, is_train=False)
 
-    # ── Sample small training subset ──────────────────────────────────────────
+    # ── 采样小型训练子集 ──────────────────────────────────────────────────────
     all_train = json.load(open(data_dir / "data/coco_train.json"))
     random.seed(42)
     subset = random.sample(all_train, TRAIN_SAMPLES)
@@ -105,7 +105,7 @@ def main():
 
     print(f"验证集: {len(val_ds)} 条  |  随机基线 R@1 ≈ {100/len(val_ds):.2f}%")
 
-    # ── Model ─────────────────────────────────────────────────────────────────
+    # ── 模型 ──────────────────────────────────────────────────────────────────
     backbone = build_vlmo_base(img_size=IMAGE_RES)
     model    = VLMoForRetrieval(backbone, embed_dim=EMBED_DIM, temp=TEMP).to(device)
 

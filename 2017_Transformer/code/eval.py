@@ -1,7 +1,7 @@
 """
-Evaluate Transformer on WMT14 EN-DE newstest2014.
-Beam search decoding + sacrebleu BLEU.
-Usage: python eval.py --config ../configs/translation_wmt14.yaml --checkpoint path/to/ckpt.pt
+在 WMT14 英德 newstest2014 测试集上评估 Transformer。
+使用束搜索解码并以 sacrebleu 计算 BLEU 分数。
+用法：python eval.py --config ../configs/translation_wmt14.yaml --checkpoint path/to/ckpt.pt
 """
 import argparse
 import json
@@ -18,11 +18,11 @@ from code.model import Transformer
 def beam_search(model, src, src_mask, bos_id, eos_id, pad_id,
                 beam_size: int, max_len: int, length_penalty: float, device):
     B = src.size(0)
-    assert B == 1, "beam search runs one sentence at a time"
+    assert B == 1, "束搜索每次只处理一条句子"
 
     enc_out = model.encoder(src, src_mask)
 
-    beams  = [[bos_id]]       # list of token sequences
+    beams  = [[bos_id]]       # 候选序列列表
     scores = [0.0]
     done   = []
 

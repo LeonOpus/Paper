@@ -1,6 +1,6 @@
 """
-Train Transformer on WMT14 EN-DE.
-Usage: python train.py --config ../configs/translation_wmt14.yaml
+在 WMT14 英德翻译任务上训练 Transformer。
+用法：python train.py --config ../configs/translation_wmt14.yaml
 """
 import argparse
 import os
@@ -10,7 +10,6 @@ import math
 import yaml
 import torch
 import torch.nn as nn
-from torch.cuda.amp import GradScaler, autocast
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -26,18 +25,18 @@ class LabelSmoothingLoss(nn.Module):
         self.pad_idx = pad_idx
 
     def forward(self, logits, target):
-        # logits: (B*T, V), target: (B*T,)
-        # Avoid materializing full (B*T, V) dist — compute NLL + uniform separately
+        # logits: (B*T, V)，target: (B*T,)
+        # 避免完整展开 (B*T, V) 分布——分别计算 NLL 和均匀平滑项
         log_probs = torch.log_softmax(logits, dim=-1)
-        nll  = -log_probs.gather(1, target.unsqueeze(1)).squeeze(1)   # (B*T,)
-        smooth = -log_probs.mean(dim=-1)                               # (B*T,)
+        nll    = -log_probs.gather(1, target.unsqueeze(1)).squeeze(1)  # 负对数似然 (B*T,)
+        smooth = -log_probs.mean(dim=-1)                               # 均匀平滑项 (B*T,)
         loss = (1.0 - self.smoothing) * nll + self.smoothing * smooth
         mask = target == self.pad_idx
         return loss.masked_fill(mask, 0.0).sum() / (~mask).sum().clamp(min=1)
 
 
 class WarmupScheduler:
-    """Paper equation: lrate = d_model^-0.5 * min(step^-0.5, step * warmup^-1.5)"""
+    """论文公式：学习率 = d_model^-0.5 * min(step^-0.5, step * warmup^-1.5)"""
     def __init__(self, optimizer, d_model: int, warmup_steps: int):
         self.optimizer = optimizer
         self.d_model = d_model
@@ -60,7 +59,7 @@ def train(args):
         conf = yaml.safe_load(f)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Device: {device}")
+    print(f"Device: {device}", flush=True)
 
     sp_model = cfg.resolve_data("tokenizer.model")
     train_loader = build_loader(
@@ -87,70 +86,67 @@ def train(args):
     ).to(device)
 
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Parameters: {n_params/1e6:.1f}M")
+    print(f"Parameters: {n_params/1e6:.1f}M", flush=True)
 
+    accum_steps = conf.get("gradient_accumulation_steps", 1)
     criterion = LabelSmoothingLoss(conf["vocab_size"], conf["label_smoothing"])
     optimizer = torch.optim.Adam(model.parameters(), lr=1.0, betas=(0.9, 0.98), eps=1e-9)
     scheduler = WarmupScheduler(optimizer, conf["d_model"], conf["warmup_steps"])
-    scaler    = GradScaler(enabled=conf.get("fp16", True), init_scale=256, growth_interval=2000)
 
     out_rel = conf.get("output_dir", "")
     output_dir = os.path.join(cfg.OUTPUT_DIR, out_rel) if out_rel else cfg.OUTPUT_DIR
     os.makedirs(output_dir, exist_ok=True)
-    os.makedirs(cfg.LOG_DIR, exist_ok=True)
-
-    log_file = open(os.path.join(cfg.LOG_DIR, "train.log"), "w")
 
     def log(msg):
-        print(msg)
-        log_file.write(msg + "\n")
-        log_file.flush()
+        print(msg, flush=True)
 
     global_step = 0
+    max_steps = conf.get("max_steps", None)
+
+    optimizer.zero_grad()
     for epoch in range(1, conf["epochs"] + 1):
         model.train()
-        epoch_loss, t0 = 0.0, time.time()
+        epoch_loss, n_updates, t0 = 0.0, 0, time.time()
 
-        for step, (src, tgt_in, tgt_out) in enumerate(train_loader):
+        for mini_step, (src, tgt_in, tgt_out) in enumerate(train_loader):
+            if max_steps and global_step >= max_steps:
+                break
+
             src, tgt_in, tgt_out = src.to(device), tgt_in.to(device), tgt_out.to(device)
 
-            with autocast(enabled=conf.get("fp16", True)):
-                logits = model(src, tgt_in)                             # (B, T, V)
-            loss = criterion(logits.float().view(-1, logits.size(-1)), tgt_out.view(-1))
+            # 损失除以累积步数，使梯度等效于大 batch
+            logits = model(src, tgt_in)                                  # 形状 (B, T, V)
+            loss = criterion(logits.view(-1, logits.size(-1)), tgt_out.view(-1))
+            (loss / accum_steps).backward()
 
-            if torch.isnan(loss) or torch.isinf(loss):
+            # 每 accum_steps 个 mini-batch 做一次参数更新
+            if (mini_step + 1) % accum_steps == 0:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), conf["max_grad_norm"])
+                optimizer.step()
                 optimizer.zero_grad()
                 lr = scheduler.step()
                 global_step += 1
-                continue
+                epoch_loss += loss.item()
+                n_updates += 1
 
-            scaler.scale(loss).backward()
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), conf["max_grad_norm"])
-            scaler.step(optimizer)
-            scaler.update()
-            optimizer.zero_grad()
-            lr = scheduler.step()
-            global_step += 1
-            epoch_loss += loss.item()
+                if global_step % 500 == 0:
+                    log(f"Epoch {epoch} global={global_step} "
+                        f"loss={loss.item():.4f} lr={lr:.2e} time={time.time()-t0:.0f}s")
 
-            if step % 500 == 0:
-                log(f"Epoch {epoch} step {step}/{len(train_loader)} "
-                    f"loss={loss.item():.4f} lr={lr:.2e} time={time.time()-t0:.0f}s")
+        if n_updates > 0:
+            avg_loss = epoch_loss / n_updates
+            log(f"Epoch {epoch} done. avg_loss={avg_loss:.4f} ppl={math.exp(avg_loss):.2f}")
+        else:
+            log(f"Epoch {epoch} done. (no updates this epoch)")
 
-        avg_loss = epoch_loss / len(train_loader)
-        log(f"Epoch {epoch} done. avg_loss={avg_loss:.4f} ppl={math.exp(avg_loss):.2f}")
-
-        # Validation
+        # 验证阶段
         model.eval()
         val_loss = 0.0
         with torch.no_grad():
             for src, tgt_in, tgt_out in val_loader:
                 src, tgt_in, tgt_out = src.to(device), tgt_in.to(device), tgt_out.to(device)
-                with autocast(enabled=conf.get("fp16", True)):
-                    logits = model(src, tgt_in)
-                loss = criterion(logits.float().view(-1, logits.size(-1)), tgt_out.view(-1))
-                val_loss += loss.item()
+                logits = model(src, tgt_in)
+                val_loss += criterion(logits.view(-1, logits.size(-1)), tgt_out.view(-1)).item()
         val_loss /= len(val_loader)
         log(f"Epoch {epoch} val_loss={val_loss:.4f} val_ppl={math.exp(val_loss):.2f}")
 
@@ -164,7 +160,8 @@ def train(args):
         }, ckpt)
         log(f"Saved {ckpt}")
 
-    log_file.close()
+        if max_steps and global_step >= max_steps:
+            break
 
 
 if __name__ == "__main__":

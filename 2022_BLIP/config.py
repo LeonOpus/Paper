@@ -38,7 +38,7 @@ OUTPUT_ROOT = os.environ.get("BLIP_OUTPUT_ROOT", os.path.join(os.path.expanduser
 OUTPUT_DIR = os.path.join(OUTPUT_ROOT, "output")
 LOG_BASE = os.path.join(OUTPUT_ROOT, "logs")
 
-# COCO images are shared with VLMO project
+# COCO 图像与 VLMO 项目共享
 COCO_IMAGE_ROOT = os.environ.get(
     "COCO_IMAGE_ROOT",
     os.path.join(os.path.expanduser("~"), "DataSet", "HuggingFace", "2022_VLMO", "data"),
@@ -47,13 +47,13 @@ DATA_DIR = os.path.join(PAPER_DATA, "data")
 
 
 def resolve_model(model_id: str) -> str:
-    """Return local ModelScope path for a model ID, falling back to the ID itself."""
+    """返回模型 ID 对应的本地 ModelScope 路径，若不存在则回退到 ID 本身。"""
     local = os.path.join(MODELSCOPE_CACHE, *model_id.split("/"))
     return local if os.path.isdir(local) else model_id
 
 
 def resolve_data(rel_path: str) -> str:
-    """Resolve a data path relative to DATA_DIR."""
+    """将相对路径解析为基于 DATA_DIR 的绝对路径。"""
     return os.path.join(DATA_DIR, rel_path) if not os.path.isabs(rel_path) else rel_path
 
 for path in [DATA_DIR, HF_HUB_CACHE, HF_DATASETS_CACHE, HF_MODULES_CACHE,

@@ -1,15 +1,15 @@
 """
-Construct BLIP-format COCO Karpathy val/test splits from existing COCO annotations.
+从现有 COCO 标注文件构建 BLIP 格式的 COCO Karpathy val/test 划分。
 
-Karpathy split convention (by order in captions_val2014.json):
-  val:     first 5,000 images
-  test:    images 5,000-9,999
-  restval: images 10,000+ (used by some papers for training; skipped here)
+Karpathy 划分规则（依据 captions_val2014.json 中的顺序）：
+  val:     前 5,000 张图像
+  test:    第 5,000 至 9,999 张图像
+  restval: 第 10,000 张起（部分论文用于训练，此处跳过）
 
-Train split is taken directly from the existing VLMO coco_train.json
-(82,783 images from train2014, same as Karpathy train split).
+训练集直接来自已有的 VLMO coco_train.json
+（train2014 中的 82,783 张图像，与 Karpathy 训练划分相同）。
 
-Output format matches BLIP/ALBEF:
+输出格式与 BLIP/ALBEF 一致：
   [{"image": "coco/images/val2014/COCO_val2014_XXXXXX.jpg",
     "image_id": XXXXXX, "caption": "..."}, ...]
 """
@@ -32,7 +32,7 @@ def build_train():
         print(f"[skip] {dst}")
         return
     anns = json.load(open(src))
-    # Add image_id field from filename
+    # 从文件名中提取 image_id 字段
     out = []
     for item in anns:
         fname = os.path.basename(item["image"])          # COCO_train2014_000000XXXXXX.jpg
@@ -46,16 +46,16 @@ def build_val_test():
     cap_file = os.path.join(VLMO_DATA, "coco", "annotations", "captions_val2014.json")
     raw = json.load(open(cap_file))
 
-    # Map image_id -> file_name
+    # 建立 image_id -> file_name 的映射
     id_to_fname = {img["id"]: img["file_name"] for img in raw["images"]}
 
-    # Order images by their position in the JSON (Karpathy convention)
+    # 按图像在 JSON 中的位置排序（Karpathy 规范）
     ordered_ids = [img["id"] for img in raw["images"]]
 
     val_ids  = set(ordered_ids[:5000])
     test_ids = set(ordered_ids[5000:10000])
 
-    # Build image_id -> list of captions
+    # 建立 image_id -> 标注列表 的映射
     id_to_caps = {}
     for ann in raw["annotations"]:
         id_to_caps.setdefault(ann["image_id"], []).append(ann["caption"])

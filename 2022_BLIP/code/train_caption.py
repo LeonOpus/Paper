@@ -1,6 +1,6 @@
 """
-Fine-tune BLIP for image captioning on COCO Karpathy train split.
-Usage: python train_caption.py --config ../configs/caption_coco.yaml
+在 COCO Karpathy 训练集上对 BLIP 进行图像描述生成微调。
+用法：python train_caption.py --config ../configs/caption_coco.yaml
 """
 import argparse
 import os

@@ -13,7 +13,7 @@ class CocoCaptionDataset(Dataset):
         anns = json.load(open(ann_file))
         self.anns = anns
 
-        # For val/test: group captions by image for evaluation
+        # 验证/测试集：按图像分组标注，用于评估
         if split != "train":
             seen = {}
             self.images = []
@@ -55,8 +55,8 @@ class CocoCaptionDataset(Dataset):
 
 class CocoRetrievalDataset(Dataset):
     """
-    Returns (image, text) pairs for retrieval evaluation.
-    Builds separate image list and text list for R@K computation.
+    为检索评估返回 (image, text) 对。
+    构建独立的图像列表和文本列表，用于 R@K 计算。
     """
     def __init__(self, ann_file, image_root, processor):
         self.image_root = image_root
@@ -64,12 +64,12 @@ class CocoRetrievalDataset(Dataset):
 
         anns = json.load(open(ann_file))
 
-        # Deduplicate images, keep all texts
+        # 去重图像，保留全部文本
         img_to_idx = {}
         self.images = []
         self.texts = []
-        self.txt2img = []   # text i -> image index
-        self.img2txt = []   # image i -> list of text indices
+        self.txt2img = []   # 文本索引 i -> 图像索引
+        self.img2txt = []   # 图像索引 i -> 文本索引列表
 
         for item in anns:
             img_path = item["image"]

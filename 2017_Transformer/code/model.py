@@ -1,6 +1,6 @@
 """
-Transformer: Attention Is All You Need (Vaswani et al., 2017)
-Full encoder-decoder implementation from scratch.
+Transformer：Attention Is All You Need（Vaswani 等，2017）
+从零开始的完整编码器-解码器实现。
 """
 import math
 import torch
@@ -14,7 +14,7 @@ class ScaledDotProductAttention(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, q, k, v, mask=None):
-        # q/k/v: (B, heads, T, d_k)
+        # q/k/v: (B, 头数, T, d_k)
         d_k = q.size(-1)
         scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d_k)
         if mask is not None:
@@ -73,7 +73,7 @@ class PositionalEncoding(nn.Module):
         div = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
         pe[:, 0::2] = torch.sin(pos * div)
         pe[:, 1::2] = torch.cos(pos * div)
-        self.register_buffer('pe', pe.unsqueeze(0))  # (1, max_len, d_model)
+        self.register_buffer('pe', pe.unsqueeze(0))  # (1, 最大长度, d_model)
 
     def forward(self, x):
         return self.dropout(x + self.pe[:, :x.size(1)])
@@ -160,7 +160,7 @@ class Transformer(nn.Module):
         self.proj    = nn.Linear(d_model, vocab_size, bias=False)
 
         if share_embed:
-            # Paper Section 3.4: share weights among encoder embed, decoder embed, and pre-softmax
+            # 论文第 3.4 节：共享编码器嵌入、解码器嵌入与 softmax 前线性层的权重
             self.decoder.embed.weight = self.encoder.embed.weight
             self.proj.weight          = self.encoder.embed.weight
 
@@ -173,14 +173,14 @@ class Transformer(nn.Module):
 
     @staticmethod
     def make_src_mask(src, pad_idx: int = 0):
-        # (B, 1, 1, T_src)
+        # 形状：(B, 1, 1, T_src)
         return (src != pad_idx).unsqueeze(1).unsqueeze(2)
 
     @staticmethod
     def make_tgt_mask(tgt, pad_idx: int = 0):
         T = tgt.size(1)
         pad_mask  = (tgt != pad_idx).unsqueeze(1).unsqueeze(2)           # (B,1,1,T)
-        causal    = torch.tril(torch.ones(T, T, device=tgt.device)).bool()  # (T,T)
+        causal    = torch.tril(torch.ones(T, T, device=tgt.device)).bool()  # 因果掩码 (T,T)
         return pad_mask & causal                                          # (B,1,T,T)
 
     def forward(self, src, tgt):
@@ -188,7 +188,7 @@ class Transformer(nn.Module):
         tgt_mask = self.make_tgt_mask(tgt)
         enc_out  = self.encoder(src, src_mask)
         dec_out  = self.decoder(tgt, enc_out, src_mask, tgt_mask)
-        return self.proj(dec_out)                                         # (B, T, vocab)
+        return self.proj(dec_out)                                         # (B, T, 词表大小)
 
     def encode(self, src):
         src_mask = self.make_src_mask(src)

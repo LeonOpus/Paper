@@ -1,10 +1,10 @@
 """
-Download BLIP model weights from ModelScope.
-Run once before training/evaluation.
+从 ModelScope 下载 BLIP 模型权重。
+在训练/评估前运行一次即可。
 
-Models downloaded:
-  - Salesforce/blip-image-captioning-base  (captioning fine-tune)
-  - Salesforce/blip-itm-base-coco          (retrieval eval, already COCO-tuned)
+下载的模型：
+  - Salesforce/blip-image-captioning-base  （图像描述微调模型）
+  - Salesforce/blip-itm-base-coco          （检索评估模型，已在 COCO 上微调）
 """
 import os
 import sys
@@ -12,7 +12,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as cfg
 
-# ModelScope model IDs for BLIP
+# BLIP 在 ModelScope 上的模型 ID
 MODELS = {
     "blip-image-captioning-base": "Salesforce/blip-image-captioning-base",
     "blip-itm-base-coco":         "Salesforce/blip-itm-base-coco",
@@ -23,7 +23,7 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 
 
 def model_local_path(model_id: str) -> str:
-    # ModelScope stores as CACHE_DIR/ORG/MODEL-NAME/
+    # ModelScope 将模型存储于 CACHE_DIR/ORG/MODEL-NAME/ 目录
     return os.path.join(CACHE_DIR, *model_id.split("/"))
 
 

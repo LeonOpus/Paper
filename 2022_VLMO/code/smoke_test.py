@@ -1,9 +1,9 @@
-"""Quick sanity check: build model and run a forward pass with random inputs."""
+"""快速完整性检查：构建模型并用随机输入执行一次前向传播。"""
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-import config as cfg  # sets up HF env vars
+import config as cfg  # 设置 HF 环境变量
 
 import torch
 from models.vlmo import build_vlmo_base, VLMoForRetrieval, VLMoForVQA
@@ -20,26 +20,26 @@ image    = torch.randn(B, 3, 224, 224, device=device)
 input_ids = torch.randint(0, 30522, (B, 20), device=device)
 attn_mask = torch.ones(B, 20, device=device)
 
-# vision-only
+# 仅视觉
 v_out = backbone(image=image, mode="vision")
 print(f"Vision output:   {v_out.shape}")
 
-# language-only
+# 仅语言
 l_out = backbone(input_ids=input_ids, attention_mask=attn_mask, mode="language")
 print(f"Language output: {l_out.shape}")
 
-# joint VL
+# 视觉-语言联合
 vl_v, vl_l = backbone(image=image, input_ids=input_ids,
                        attention_mask=attn_mask, mode="vl")
 print(f"VL vision:       {vl_v.shape}")
 print(f"VL language:     {vl_l.shape}")
 
-# retrieval head
+# 检索头
 ret_model = VLMoForRetrieval(backbone).to(device)
 out = ret_model(image, input_ids, attn_mask)
 print(f"Retrieval loss:  {out['loss'].item():.4f}")
 
-# VQA head
+# VQA 头
 vqa_model = VLMoForVQA(backbone, num_answers=3129).to(device)
 labels = torch.zeros(B, 3129, device=device)
 out = vqa_model(image, input_ids, attn_mask, labels=labels)

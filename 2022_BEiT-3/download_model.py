@@ -1,7 +1,7 @@
 """
-Download BEiT-3 model weights and tokenizer from GitHub Releases.
-Also clones the official Microsoft BEiT-3 source code (needed for torchscale).
-Usage: python download_model.py
+从 GitHub Releases 下载 BEiT-3 模型权重和分词器。
+同时克隆微软官方 BEiT-3 源代码（torchscale 依赖所需）。
+用法：python download_model.py
 """
 import os
 import subprocess
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     for fname, url in FILES.items():
         wget(url, os.path.join(MODEL_DIR, fname))
 
-    # Clone Microsoft's BEiT-3 source (torchscale-based implementation)
+    # 克隆微软 BEiT-3 源码（基于 torchscale 的实现）
     if not os.path.isdir(BEIT3_CODE_DIR):
         print("Cloning microsoft/unilm beit3 source ...")
         subprocess.run([
