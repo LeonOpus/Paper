@@ -16,8 +16,8 @@ dropout: 0.1
 
 # Training
 epochs: 20
-batch_size_sentences: 32
-gradient_accumulation_steps: 8   # 有效 batch = 32×8 = 256句 ≈ 6400 tokens
+batch_size_sentences: 96
+gradient_accumulation_steps: 3   # 有效 batch = 96×3 = 288句 ≈ 7200 tokens
 warmup_steps: 4000
 label_smoothing: 0.1
 max_grad_norm: 1.0
