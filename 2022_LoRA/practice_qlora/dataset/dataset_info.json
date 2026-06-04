@@ -1,0 +1,11 @@
+{
+  "compliance_qa": {
+    "file_name": "compliance_qa.json",
+    "formatting": "alpaca",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  }
+}

@@ -23,8 +23,8 @@ from sklearn.metrics import accuracy_score
 
 # ── 超参数（来自论文 Appendix A.3）──────────────────────────────────────────
 EPOCHS = float(os.environ.get("EPOCHS", "3"))
-BATCH_SIZE = int(os.environ.get("BATCH_SIZE", "256"))
-LEARNING_RATE = float(os.environ.get("LEARNING_RATE", str(2e-5 * (256 / 32))))  # 线性缩放：原论文 batch=256，LR=2e-4
+BATCH_SIZE = int(os.environ.get("BATCH_SIZE", "32"))
+LEARNING_RATE = float(os.environ.get("LEARNING_RATE", str(2e-5)))  # 论文 Appendix A.3: batch=32, lr=2e-5
 MAX_SEQ_LEN = int(os.environ.get("MAX_SEQ_LEN", "128"))
 MAX_STEPS = int(os.environ.get("MAX_STEPS", "0"))
 SMOKE_MAX_SAMPLES = int(os.environ.get("SMOKE_MAX_SAMPLES", "0"))
@@ -33,10 +33,12 @@ LOG_DIR = os.path.join(config.LOG_BASE, "sst2")
 
 # ── 1. 加载数据集 ─────────────────────────────────────────────────────────
 print("加载 SST-2 数据集...")
-dataset = load_dataset(
-    "glue",
-    "sst2",
-)
+_sst2_dir = os.path.join(config.PAPER_DATA, "glue", "sst2")
+dataset = load_dataset("parquet", data_files={
+    "train":      os.path.join(_sst2_dir, "train-00000-of-00001.parquet"),
+    "validation": os.path.join(_sst2_dir, "validation-00000-of-00001.parquet"),
+    "test":       os.path.join(_sst2_dir, "test-00000-of-00001.parquet"),
+})
 if SMOKE_MAX_SAMPLES > 0:
     for split in dataset.keys():
         keep = min(SMOKE_MAX_SAMPLES, len(dataset[split]))
@@ -89,8 +91,8 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=64,
     learning_rate=LEARNING_RATE,
     weight_decay=0.01,
-    warmup_steps=79,   # 总步数 ~790 的 10%
-    evaluation_strategy="epoch",
+    warmup_steps=630,  # 总步数 ~6300 的 10%
+    eval_strategy="epoch",
     save_strategy="epoch",
     load_best_model_at_end=True,
     metric_for_best_model="accuracy",
@@ -108,7 +110,6 @@ trainer = Trainer(
     args=training_args,
     train_dataset=tokenized["train"],
     eval_dataset=tokenized["validation"],
-    tokenizer=tokenizer,
     data_collator=data_collator,
     compute_metrics=compute_metrics,
 )
