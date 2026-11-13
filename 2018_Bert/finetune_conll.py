@@ -23,7 +23,9 @@ from seqeval.metrics import f1_score, classification_report
 
 # ── 超参数（来自论文 Appendix A.3）──────────────────────────────────────────
 EPOCHS = float(os.environ.get("EPOCHS", "3"))
-BATCH_SIZE = int(os.environ.get("BATCH_SIZE", "256"))  # 线性缩放：原32 → 256（×8），LR 同比放大
+BATCH_SIZE = int(
+    os.environ.get("BATCH_SIZE", "256")
+)  # 线性缩放：原32 → 256（×8），LR 同比放大
 LEARNING_RATE = float(os.environ.get("LEARNING_RATE", "1.6e-4"))  # 2e-5 × 8
 MAX_SEQ_LEN = int(os.environ.get("MAX_SEQ_LEN", "128"))
 MAX_STEPS = int(os.environ.get("MAX_STEPS", "0"))
